@@ -13,7 +13,6 @@ struct LoginView: View {
     @State private var password: String = ""
     @State private var isLoggedIn: Bool = false
      @State private var username: String = ""
-     @State private var token: String? // Store the token
 
     var body: some View {
         ZStack {
