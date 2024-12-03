@@ -2,10 +2,11 @@ import SwiftUI
 
 struct Loginpage: View {
     @StateObject private var authViewModel = AuthViewModel()
-    @State private var email: String = ""
-    @State private var password: String = ""
+    @State private var email: String = UserDefaults.standard.string(forKey: "userEmail") ?? "" // Retrieve stored email
+    @State private var password: String = UserDefaults.standard.string(forKey: "userPassword") ?? "" // Retrieve stored password
     @State private var isLoginSuccessful: Bool = false // State to track login success
-    @State private var showError: Bool = false // State to show error message
+    @State private var showErrorAlert: Bool = false // State to control alert presentation
+    @State private var rememberMe: Bool = UserDefaults.standard.bool(forKey: "rememberMe") // Store "Remember Me" preference
 
     var body: some View {
         NavigationStack {
@@ -87,17 +88,15 @@ struct Loginpage: View {
                             .padding()
                             .background(Color.white.opacity(0.9))
                             .cornerRadius(8)
+
+                        // Remember Me Toggle
+                        Toggle(isOn: $rememberMe) {
+                            Text("Remember Me")
+                                .foregroundColor(.purple)
+                        }
+                        .padding()
                     }
                     .padding(.horizontal, 30)
-
-                    // Error Message
-                    if showError {
-                        Text(authViewModel.loginMessage)
-                            .foregroundColor(.red)
-                            .font(.subheadline)
-                            .padding(.horizontal, 30)
-                            .multilineTextAlignment(.center)
-                    }
 
                     // Continue Button
                     Button(action: {
@@ -126,33 +125,79 @@ struct Loginpage: View {
             }
             .navigationBarHidden(true) // Completely hides the navigation bar
             .navigationBarBackButtonHidden(true) // Prevents back button
+            .alert("Error", isPresented: $showErrorAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(authViewModel.loginMessage)
+            }
+            .onAppear {
+                if let userEmail = UserDefaults.standard.string(forKey: "userEmail"), !userEmail.isEmpty {
+                    print("Email is set: \(userEmail)")
+                    autoLoginIfRemembered()
+                }
+                
+            }
         }
     }
 
     private func login() {
         guard !email.isEmpty, !password.isEmpty else {
             authViewModel.loginMessage = "Please enter both email and password."
-            showError = true
+            showErrorAlert = true
             return
         }
 
         authViewModel.login(email: email, password: password) { success in
-            if success {
-                // Handle successful login
-                print("Login successful!")
-                isLoginSuccessful = true // Trigger navigation to the home page
-                showError = false
-            } else {
-                // Handle login failure
-                print("Login failed: \(self.authViewModel.loginMessage)")
-                showError = true
+            DispatchQueue.main.async {
+                if success {
+                    print("Login successful!")
+                    isLoginSuccessful = true // Trigger navigation to the home page
+
+                    // Save login info if "Remember Me" is checked
+                    if rememberMe {
+                        UserDefaults.standard.set(email, forKey: "userEmail")
+                        UserDefaults.standard.set(password, forKey: "userPassword")
+                        UserDefaults.standard.set(true, forKey: "rememberMe")
+                    } else {
+                        // Clear stored login info
+                        UserDefaults.standard.removeObject(forKey: "userEmail")
+                        UserDefaults.standard.removeObject(forKey: "userPassword")
+                        UserDefaults.standard.set(false, forKey: "rememberMe")
+                    }
+                } else {
+                    print("Login failed: \(self.authViewModel.loginMessage)")
+                    showErrorAlert = true
+                }
+            }
+        }
+    }
+
+
+    private func autoLoginIfRemembered() {
+        
+        if rememberMe, !email.isEmpty, !password.isEmpty {
+            // Attempt auto-login
+            authViewModel.login(email: email, password: password) { success in
+                if success {
+                    print("Auto-login successful!")
+                    isLoginSuccessful = true
+                } else {
+                    print("Auto-login failed: \(authViewModel.loginMessage)")
+                }
             }
         }
     }
 }
-
 struct Loginpage_Previews: PreviewProvider {
     static var previews: some View {
-        Loginpage()
+        Group {
+            Loginpage()
+                .environment(\.colorScheme, .light)
+                .previewDisplayName("Light Mode")
+            
+            Loginpage()
+                .environment(\.colorScheme, .dark)
+                .previewDisplayName("Dark Mode")
+        }
     }
 }

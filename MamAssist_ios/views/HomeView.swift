@@ -5,7 +5,29 @@ struct HomeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Top Header Bar (without navigation)
+            // Display the content based on the selected tab
+            Group {
+                if selectedTab == 0 {
+                    homeContentView // Core content of HomeView
+                } else if selectedTab == 1 {
+                    ToolsView() // Navigates to ToolsView
+                } else if selectedTab == 2 {
+                    ProfileView() // Navigates to ProfileView
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+            // Custom Navigation Bar (handles switching between views)
+            CustomNavigationBar(selectedTab: $selectedTab)
+        }
+        .edgesIgnoringSafeArea(.bottom)
+        .background(Color("PeachBackground").edgesIgnoringSafeArea(.all))
+    }
+
+    // Core Content View for HomeView
+    private var homeContentView: some View {
+        VStack(spacing: 0) {
+            // Top Header Bar
             HStack {
                 Spacer()
                 Text("MamAssist")
@@ -31,7 +53,7 @@ struct HomeView: View {
                             Image(systemName: "info.bubble")
                                 .font(.system(size: 50))
                                 .foregroundColor(.purple)
-                            Text("complete you information")
+                            Text("Complete your information")
                                 .font(.headline)
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(.purple)
@@ -60,11 +82,7 @@ struct HomeView: View {
                     .padding(.horizontal)
                 }
             }
-
-            // Custom Navigation Bar (handles switching between views)
         }
-        .edgesIgnoringSafeArea(.bottom)
-        .background(Color("purple").edgesIgnoringSafeArea(.all))
     }
 }
 
