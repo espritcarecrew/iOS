@@ -9,8 +9,7 @@ struct Firstpage: View {
                     .scaledToFill()
                     .ignoresSafeArea() // Extend the image to the edges of the screen
 
-                VStack(spacing: 50) {
-                    Spacer()
+                VStack() {
 
                     // Title
                     Text("Hey, who are you?")
@@ -18,7 +17,6 @@ struct Firstpage: View {
                         .foregroundColor(.purple)
                         .padding(.bottom, 40)
 
-                    Spacer()
 
                     // "I'm Pregnant" Button
                     NavigationLink(destination: Pregnancy()) {

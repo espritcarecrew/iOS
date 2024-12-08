@@ -1,48 +1,42 @@
-//
-//  customnavbar.swift
-//  MamAssist_ios
-//
-//  Created by med karim checambou on 27/11/2024.
-//
 import SwiftUI
 
-struct CustomNavigationBar: View {
+struct CustomNavBar: View {
     @Binding var selectedTab: Int // Binding to control the selected tab index
 
     var body: some View {
         HStack {
-            CustomNavBarItem(
+            CustomNavBarButton(
                 title: "Accueil",
                 systemImage: "house.fill",
-                isSelected: selectedTab == 0
+                isSelected: selectedTab == 0 // Vérifie si c'est le bouton actif
             ) {
                 selectedTab = 0
             }
+
             Spacer()
 
-            CustomNavBarItem(
+            CustomNavBarButton(
                 title: "Discussions",
-                systemImage: "bubble.left.and.bubble.right.fill",
-                isSelected: selectedTab == 1
+                systemImage: "bubble.left.and.bubble.right.fill", // Correction de l'icône
+                isSelected: selectedTab == 1 // Vérifie si c'est le bouton actif
             ) {
                 selectedTab = 1
             }
             Spacer()
 
-            CustomNavBarItem(
+            CustomNavBarButton(
                 title: "Doctors",
-                systemImage: "stethoscope",
-                isSelected: selectedTab == 2
+                systemImage: "", // Correction de l'icône
+                isSelected: selectedTab == 2 // Vérifie si c'est le bouton actif
             ) {
                 selectedTab = 2
             }
-
             Spacer()
 
-            CustomNavBarItem(
+            CustomNavBarButton(
                 title: "Tools",
                 systemImage: "wrench.and.screwdriver",
-                isSelected: selectedTab == 3
+                isSelected: selectedTab == 3 // Vérifie si c'est le bouton actif
             ) {
                 selectedTab = 3
             }
@@ -52,7 +46,7 @@ struct CustomNavigationBar: View {
     }
 }
 
-struct CustomNavBarItem: View {
+struct CustomNavBarButton: View {
     let title: String
     let systemImage: String
     let isSelected: Bool
@@ -72,5 +66,3 @@ struct CustomNavBarItem: View {
         }
     }
 }
-
-

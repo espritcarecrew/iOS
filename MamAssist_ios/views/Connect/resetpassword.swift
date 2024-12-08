@@ -14,7 +14,7 @@ struct ResetPasswordView: View {
                 VStack {
                     // Back Circle Button
                     HStack {
-                        NavigationLink(destination: Loginpage()) {
+                        NavigationLink(destination: LoginViewWithAssetImage()) {
                             Circle()
                                 .fill(Color.purple)
                                 .frame(width: 30, height: 30)
