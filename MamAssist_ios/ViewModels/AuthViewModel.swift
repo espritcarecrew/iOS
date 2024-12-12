@@ -13,7 +13,7 @@ class AuthViewModel: ObservableObject {
 
     // Function to perform login
        func login(email: String, password: String, completion: @escaping (Bool) -> Void) {
-           guard let url = URL(string: "http://localhost:3001/auth/login") else {
+           guard let url = URL(string: "http://localhost:3000/auth/login") else {
                completion(false)
                return
            }
@@ -72,7 +72,7 @@ class AuthViewModel: ObservableObject {
 
        // Fetch user by email from /auth/find endpoint
        private func fetchUserByEmail(email: String, completion: @escaping ([String: Any]?) -> Void) {
-           guard let url = URL(string: "http://localhost:3001/auth/find?field=email&value=\(email)") else {
+           guard let url = URL(string: "http://localhost:3000/auth/find?field=email&value=\(email)") else {
                completion(nil)
                return
            }
@@ -111,36 +111,45 @@ class AuthViewModel: ObservableObject {
        
    }
     func signup(username: String, email: String, password: String, bio: String, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "http://localhost:3001/auth/signup") else {
-            signupMessage = "Invalid URL"
-            completion(false)
+        guard let url = URL(string: "http://localhost:3000/auth/signup") else {
+            DispatchQueue.main.async {
+                self.signupMessage = "Invalid URL"
+                completion(false)
+            }
             return
         }
 
+        // User details payload
         let userDetails: [String: Any] = [
             "username": username,
             "email": email,
             "password": password,
             "bio": bio,
-            "imageUri": "test" // Placeholder for user image URI
+            "imageUri": "https://example.com/images/default-profile.jpg" // Placeholder for user image URI
         ]
 
+        // Create the request
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
+            // Convert user details to JSON data
             request.httpBody = try JSONSerialization.data(withJSONObject: userDetails, options: [])
         } catch {
-            print("Error serializing JSON: \(error)")
-            signupMessage = "Error serializing user details"
-            completion(false)
+            DispatchQueue.main.async {
+                print("Error serializing JSON: \(error)")
+                self.signupMessage = "Error serializing user details"
+                completion(false)
+            }
             return
         }
 
+        // Perform the network request
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
+                    print("Signup failed with error: \(error.localizedDescription)")
                     self.signupMessage = "Signup failed: \(error.localizedDescription)"
                     completion(false)
                 }
@@ -149,35 +158,47 @@ class AuthViewModel: ObservableObject {
 
             guard let data = data else {
                 DispatchQueue.main.async {
+                    print("No data received from server.")
                     self.signupMessage = "No data received"
                     completion(false)
                 }
                 return
             }
 
+            // Parse the response
             do {
                 if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    if let success = jsonResponse["success"] as? Bool {
+                    if let success = jsonResponse["success"] as? Bool, success == true {
                         DispatchQueue.main.async {
-                            self.signupMessage = success ? "Signup successful!" : "Signup failed."
-                            completion(success)
+                            print("Signup successful! Response: \(jsonResponse)")
+                            self.signupMessage = "Signup successful!"
+                            completion(true)
                         }
                     } else {
-                        let message = jsonResponse["message"] as? String ?? "Unexpected response structure."
+                        let message = jsonResponse["message"] as? String ?? "Signup failed for an unknown reason."
                         DispatchQueue.main.async {
+                            print("Signup failed with message: \(message)")
                             self.signupMessage = message
                             completion(false)
                         }
                     }
+                } else {
+                    DispatchQueue.main.async {
+                        print("Unexpected response structure: \(data)")
+                        self.signupMessage = "Unexpected response structure"
+                        completion(false)
+                    }
                 }
             } catch {
                 DispatchQueue.main.async {
+                    print("Error decoding server response: \(error.localizedDescription)")
                     self.signupMessage = "Error decoding response: \(error.localizedDescription)"
                     completion(false)
                 }
             }
         }.resume()
     }
+
     
     
 }

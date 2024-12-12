@@ -10,6 +10,7 @@ struct ProfileView: View {
     @State private var isLoggedOut: Bool = false
     @State private var isImagePickerPresented: Bool = false
     @State private var profileImage: UIImage? = nil // Fetched or updated profile image
+    @State private var isEditProfilePresented: Bool = false // New state for Edit Profile view
 
     var body: some View {
         NavigationStack {
@@ -74,7 +75,9 @@ struct ProfileView: View {
 
                 // Action Section
                 VStack(spacing: 16) {
-                    ProfileRow(title: "Edit Profile", icon: "pencil.circle")
+                    NavigationLink(destination: EditProfileView(userName: $userName, userEmail: $userEmail, bio: $bio)) {
+                        ProfileRow(title: "Edit Profile", icon: "pencil.circle")
+                    }
                     ProfileRow(title: "Settings", icon: "gearshape")
                     ProfileRow(title: "Notifications", icon: "bell.circle")
                     ProfileRow(title: "Privacy Policy", icon: "lock.circle")
@@ -94,7 +97,7 @@ struct ProfileView: View {
                 loadImage()
             }
             .navigationDestination(isPresented: $isLoggedOut) {
-                Loginpage()
+                LoginViewWithAssetImage()
                     .navigationBarHidden(true)
                     .navigationBarBackButtonHidden(true)
             }
@@ -153,6 +156,70 @@ struct ProfileRow: View {
             RoundedRectangle(cornerRadius: 15)
                 .fill(Color.white)
         )
+    }
+}
+
+struct EditProfileView: View {
+    @Binding var userName: String
+    @Binding var userEmail: String
+    @Binding var bio: String
+
+    @State private var isEditing: Bool = false
+
+    var body: some View {
+        VStack(spacing: 20) {
+            if isEditing {
+                TextField("Username", text: $userName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                TextField("Email", text: $userEmail)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                TextField("Bio", text: $bio)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                Button("Save") {
+                    UserDefaults.standard.set(userName, forKey: "userName")
+                    UserDefaults.standard.set(userEmail, forKey: "userEmail")
+                    UserDefaults.standard.set(bio, forKey: "userBio")
+                    isEditing = false
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.purple)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .padding(.horizontal)
+            } else {
+                VStack(spacing: 10) {
+                    Text("Username: \(userName)")
+                        .font(.headline)
+                    Text("Email: \(userEmail)")
+                        .font(.subheadline)
+                    Text("Bio: \(bio)")
+                        .font(.body)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+
+                Button("Edit") {
+                    isEditing = true
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .padding(.horizontal)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .navigationTitle("Edit Profile")
     }
 }
 

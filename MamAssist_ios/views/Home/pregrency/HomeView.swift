@@ -22,7 +22,7 @@ struct HomeView: View {
                         } else if selectedTab == 1 {
                             DiscussionView() // Navigates to ToolsView
                         } else if selectedTab == 2 {
-                            ToolsView() // Navigates to ProfileView
+                            DoctorFinderView() // Navigates to ProfileView
                         }else if selectedTab == 3 {
                             ToolsView() // Navigates to ToolsView
                     }
@@ -47,24 +47,26 @@ struct HomeView: View {
                 .frame(height: 100) // App bar height
             
             HStack {
-                // Left Icon
-                
-                
+                // Left Spacer
                 Spacer()
-                
+
                 // App Title
                 Text("MamAssist")
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundColor(.purple)
-                
+                    .multilineTextAlignment(.center)
+
+                // Left Spacer
                 Spacer()
-                
+
                 // Right Icon
-                Image(systemName: "bell")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.purple)
-                    .padding(.trailing, 16)
+                NavigationLink(destination: ProfileView()) { // Replace `ProfileView` with your actual profile view
+                    Image(systemName: "person.crop.circle")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.purple)
+                        .padding(.trailing, 16)
+                }
             }
         }
     }
@@ -85,24 +87,43 @@ struct HomeView: View {
                         HStack(spacing: 16) {
                             // Card 1
                             NavigationLink(destination: DetailView(imageName: "article1", title: "Importance du sport", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu felis ullamcorper, malesuada mauris in, ultricies lacus. Sed condimentum blandit lectus quis eleifend. Mauris efficitur odio sed ligula semper, vitae elementum libero rutrum. Fusce cursus,  tellus vel lobortis tempus, turpis mi mattis mi, sed ullamcorper libero nibh et augue. Cras gravida vel magna ac egestas. Etiam est eros, posuere eget dui tincidunt, ullamcorper venenatis tortor. Duis gravida justo pharetra nisl pharetra volutpat. Mauris in est non justo tincidunt volutpat. Vestibulum sollicitudin iaculis mauris. Etiam tempus sapien sit amet orci rutrum, non tristique nisl elementum. Phasellus posuere sapien nec purus consectetur gravida. Sed est purus, tincidunt non lacinia sed, lacinia sed enim. Vestibulum ultrices mollis massa quis tincidunt. Sed volutpat vel mauris non tincidunt. Duis tempor eu est at lacinia. Integer maximus lacus quis porttitor faucibus. Pellentesque dictum cursus odio, ac faucibus libero. Etiam vel sem at lorem egestas finibus.")) {
-                                CardView(color: Color.gray.opacity(0.3), imageName: "info.bubble", title: "Complete your information", subtitle: "Create a free account to unlock the content!")
+                                Image("article1")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 300, height: 300) // Adjust as needed
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             
                             NavigationLink(destination: DetailView(imageName: "article2", title: "Naussée", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu felis ullamcorper, malesuada mauris in, ultricies lacus. Sed condimentum blandit lectus quis eleifend. Mauris efficitur odio sed ligula semper, vitae elementum libero rutrum. Fusce cursus, tellus vel lobortis tempus, turpis mi mattis mi, sed ullamcorper libero nibh et augue. Cras gravida vel magna ac egestas. Etiam est eros, posuere eget dui tincidunt, ullamcorper venenatis tortor. Duis gravida justo pharetra nisl pharetra volutpat. Mauris in est non justo tincidunt volutpat. Vestibulum sollicitudin iaculis mauris. Etiam tempus sapien sit amet orci rutrum, non tristique nisl elementum. Phasellus posuere sapien nec purus consectetur gravida.Sed est purus, tincidunt non lacinia sed, lacinia sed enim. Vestibulum ultrices mollis massa quis tincidunt. Sed volutpat vel mauris non tincidunt. Duis tempor eu est at lacinia. Integer maximus lacus quis porttitor faucibus. Pellentesque dictum cursus odio, ac faucibus libero. Etiam vel sem at lorem egestas finibus.")) {
-                                CardView(color: Color.gray.opacity(0.3), imageName: "info.bubble", title: "Complete your information", subtitle: "Create a free account to unlock the content!")
+                                Image("article2")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 300, height: 300) // Adjust as needed
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             
-                            NavigationLink(destination: DetailView(imageName: "article3", title: "Importance de l'eau", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu felis ullamcorper, malesuada mauris in, ultricies lacus. Sed condimentum blandit lectus quis eleifend. Mauris efficitur odio sed ligula semper, vitae elementum libero rutrum. Fusce cursus, tellus vel lobortis tempus, turpis mi mattis mi, sed ullamcorper libero nibh et augue. Cras gravida vel magna ac egestas. Etiam est eros, posuere eget dui tincidunt, ullamcorper venenatis tortor. Duis gravida justo pharetra nisl pharetra volutpat. Mauris in est non justo tincidunt volutpat. Vestibulum sollicitudin iaculis mauris. Etiam tempus sapien sit amet orci rutrum, non tristique nisl elementum. Phasellus posuere sapien nec purus consectetur gravida.Sed est purus, tincidunt non lacinia sed, lacinia sed enim. Vestibulum ultrices mollis massa quis tincidunt. Sed volutpat vel mauris non tincidunt. Duis tempor eu est at lacinia. Integer maximus lacus quis porttitor faucibus. Pellentesque dictum cursus odio, ac faucibus libero. Etiam vel sem at lorem egestas finibus.")) {
-                                CardView(color: Color.gray.opacity(0.3), imageName: "info.bubble", title: "Complete your information", subtitle: "Create a free account to unlock the content!")
+                            NavigationLink(destination: DetailView(imageName: "article3", title: "Importance de l'eau", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu felis ullamcorper, malesuada mauris in, ultricies lacus. Sed condimentum blandit lectus quis eleifend. Mauris efficitur odio sed ligula semper, vitae elementum libero rutrum. Fusce cursus, tellus vel lobortis tempus, turpis mi mattis mi, sed ullamcorper libero nibh et augue. Cras gravida vel magna ac egestas. Etiam est eros, posuere eget dui tincidunt, ullamcorper venenatis tortor. Duis gravida justo pharetra nisl pharetra volutpat. Mauris in est non justo tincidunt volutpat. Vestibulum sollicitudin iaculis mauris. Etiam tempus sapien sit amet orci rutrum, non tristique nisl elementum. Phasellus posuere sapien nec purus consectetur gravida.Sed est purus, tincidunt non lacinia sed, lacinia sed enim. Vestibulum ultrices mollis massa quis tincidunt. Sed volutpat vel mauris non tincidunt. Duis tempor eu est at lacinia. Integer maximus lacus quis porttitor faucibus. Pellentesque dictum cursus odio, ac faucibus libero. Etiam vel sem at lorem egestas finibus.")) {                                 Image("article3")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 300, height: 300) // Adjust as needed
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             
                             NavigationLink(destination: DetailView(imageName: "article4", title: "Alimentation", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu felis ullamcorper, malesuada mauris in, ultricies lacus. Sed condimentum blandit lectus quis eleifend. Mauris efficitur odio sed ligula semper, vitae elementum libero rutrum. Fusce cursus, tellus vel lobortis tempus, turpis mi mattis mi, sed ullamcorper libero nibh et augue. Cras gravida vel magna ac egestas. Etiam est eros, posuere eget dui tincidunt, ullamcorper venenatis tortor. Duis gravida justo pharetra nisl pharetra volutpat. Mauris in est non justo tincidunt volutpat. Vestibulum sollicitudin iaculis mauris. Etiam tempus sapien sit amet orci rutrum, non tristique nisl elementum. Phasellus posuere sapien nec purus consectetur gravida.Sed est purus, tincidunt non lacinia sed, lacinia sed enim. Vestibulum ultrices mollis massa quis tincidunt. Sed volutpat vel mauris non tincidunt. Duis tempor eu est at lacinia. Integer maximus lacus quis porttitor faucibus. Pellentesque dictum cursus odio, ac faucibus libero. Etiam vel sem at lorem egestas finibus.")) {
-                                CardView(color: Color.gray.opacity(0.3), imageName: "info.bubble", title: "Complete your information", subtitle: "Create a free account to unlock the content!")
+                                Image("article4")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 300, height: 300) // Adjust as needed
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             
                             // Card 2
                             NavigationLink(destination: DetailView(imageName: "article5", title: "Baby Blues", description: "LLorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu felis ullamcorper, malesuada mauris in, ultricies lacus. Sed condimentum blandit lectus quis eleifend. Mauris efficitur odio sed ligula semper, vitae elementum libero rutrum. Fusce cursus, tellus vel lobortis tempus, turpis mi mattis mi, sed ullamcorper libero nibh et augue. Cras gravida vel magna ac egestas. Etiam est eros, posuere eget dui tincidunt, ullamcorper venenatis tortor. Duis gravida justo pharetra nisl pharetra volutpat. Mauris in est non justo tincidunt volutpat. Vestibulum sollicitudin iaculis mauris. Etiam tempus sapien sit amet orci rutrum, non tristique nisl elementum. Phasellus posuere sapien nec purus consectetur gravida.Sed est purus, tincidunt non lacinia sed, lacinia sed enim. Vestibulum ultrices mollis massa quis tincidunt. Sed volutpat vel mauris non tincidunt. Duis tempor eu est at lacinia. Integer maximus lacus quis porttitor faucibus. Pellentesque dictum cursus odio, ac faucibus libero. Etiam vel sem at lorem egestas finibus.")) {
-                                CardView(color: Color.gray.opacity(0.3), imageName: "lock.shield", title: "Secure Your Profile", subtitle: "Add additional security settings!")
+                                Image("article5")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 300, height: 300) // Adjust as needed
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                         }
                         .padding(.horizontal)

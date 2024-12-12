@@ -7,9 +7,8 @@ struct SignupView: View {
     @State private var bio: String = ""
     @State private var signupMessage: String = ""
     @State private var imageUri: String = "test" // Placeholder for image URI
-    @State private var selectedImage: UIImage? = nil
-    @State private var isImagePickerPresented: Bool = false
-
+    @State private var isSignupSuccessful: Bool = false // Navigate to home page upon success
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -17,56 +16,30 @@ struct SignupView: View {
                     .resizable()
                     .scaledToFill()
                     .edgesIgnoringSafeArea(.all)
-
+                
                 VStack {
-                    Spacer() // Push content down
-
+                    Spacer()
+                    
                     Text("Signup")
                         .font(.largeTitle)
                         .padding()
-
-                    // Image Selection
-                    VStack {
-                        if let selectedImage = selectedImage {
-                            Image(uiImage: selectedImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 200, height: 200)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.white, lineWidth: 4))
-                                .shadow(radius: 10)
-                        } else {
-                            Button(action: {
-                                isImagePickerPresented = true
-                            }) {
-                                VStack {
-                                    Image(systemName: "photo.on.rectangle")
-                                        .font(.largeTitle)
-                                        .foregroundColor(.gray)
-                                    Text("Ajouter une image")
-                                        .foregroundColor(.gray)
-                                }
-                            }
-                        }
-                    }
-                    .padding()
-
+                    
                     TextField("Username", text: $username)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
-
+                    
                     TextField("Email", text: $email)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
-
+                    
                     SecureField("Password", text: $password)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
-
+                    
                     TextField("Bio", text: $bio)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
-
+                    
                     Button(action: signup) {
                         Text("Signup")
                             .frame(maxWidth: .infinity)
@@ -76,28 +49,34 @@ struct SignupView: View {
                             .cornerRadius(10)
                     }
                     .padding()
-
+                    
                     Text(signupMessage)
                         .foregroundColor(.red)
                         .padding()
-
-                    Spacer() // Push content up
+                    
+                    Spacer()
                 }
                 .padding()
+                
+                // Navigation to HomePage after successful signup
+                NavigationLink(
+                    destination: HomeView()
+                        .navigationBarBackButtonHidden(true), // Disable the back button
+                    isActive: $isSignupSuccessful
+                ) {
+                    EmptyView()
+                }
             }
-            .edgesIgnoringSafeArea(.all) // Ensure the view occupies the full screen
-            .sheet(isPresented: $isImagePickerPresented) {
-                ImagePickerView(selectedImage: $selectedImage)
-            }
+            .navigationBarBackButtonHidden(true) // Disable the back button in SignupView
         }
     }
-
+    
     private func signup() {
-        guard let url = URL(string: "http://localhost:3001/auth/signup") else {
+        guard let url = URL(string: "http://localhost:3000/auth/signup") else {
             signupMessage = "Invalid URL"
             return
         }
-
+        
         let userDetails: [String: Any] = [
             "username": username,
             "email": email,
@@ -105,11 +84,11 @@ struct SignupView: View {
             "bio": bio,
             "imageUri": imageUri
         ]
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: userDetails, options: [])
         } catch {
@@ -117,83 +96,74 @@ struct SignupView: View {
             signupMessage = "Error serializing user details"
             return
         }
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
+                    print("Signup failed with error: \(error.localizedDescription)")
                     signupMessage = "Signup failed: \(error.localizedDescription)"
                 }
                 return
             }
-
+            
             guard let data = data else {
                 DispatchQueue.main.async {
+                    print("No data received from server.")
                     signupMessage = "No data received"
                 }
                 return
             }
-
-            // Log the raw response data
+            
             if let responseString = String(data: data, encoding: .utf8) {
                 print("Response: \(responseString)")
             }
-
-            // Decode the response from the backend
+            
             do {
                 if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    if let success = jsonResponse["success"] as? Bool {
+                    // Handle the response based on 'success' key
+                    if let success = jsonResponse["success"] as? Bool, success == true {
                         DispatchQueue.main.async {
-                            signupMessage = success ? "Signup successful!" : "Signup failed."
+                            print("Signup successful! Response: \(jsonResponse)")
+                            if let user = jsonResponse["user"] as? [String: Any] {
+                                self.storeUserInDefaults(user: user) // Store user details
+                            }
+                            self.signupMessage = "Signup successful!"
+                            self.isSignupSuccessful = true // Navigate to HomePage
                         }
                     } else {
-                        let message = jsonResponse["message"] as? String ?? "Unexpected response structure."
+                        let message = jsonResponse["message"] as? String ?? "Signup failed for an unknown reason."
                         DispatchQueue.main.async {
+                            print("Signup failed with message: \(message)")
                             signupMessage = message
                         }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        print("Unexpected response structure.")
+                        signupMessage = "Unexpected response structure"
                     }
                 }
             } catch {
                 DispatchQueue.main.async {
+                    print("Error decoding server response: \(error.localizedDescription)")
                     signupMessage = "Error decoding response: \(error.localizedDescription)"
                 }
             }
         }.resume()
     }
-}
-
-// ImagePicker to select an image
-struct ImagePickerView: UIViewControllerRepresentable {
-    @Binding var selectedImage: UIImage?
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = .photoLibrary
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let parent: ImagePickerView
-
-        init(_ parent: ImagePickerView) {
-            self.parent = parent
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                parent.selectedImage = image
-            }
-            picker.dismiss(animated: true)
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
+    
+    // Store user details in UserDefaults
+    private func storeUserInDefaults(user: [String: Any]) {
+        if let username = user["username"] as? String,
+           let email = user["email"] as? String,
+           let bio = user["bio"] as? String,
+           let imageUri = user["imageUri"] as? String { // Explicitly check for a non-nil string
+            UserDefaults.standard.set(username, forKey: "userName")
+            UserDefaults.standard.set(email, forKey: "userEmail")
+            UserDefaults.standard.set(bio, forKey: "userBio")
+            UserDefaults.standard.set(imageUri, forKey: "imageUri")
+        } else {
+            print("Error: Missing user data.")
         }
     }
 }
