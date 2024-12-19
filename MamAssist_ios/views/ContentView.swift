@@ -7,18 +7,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    // Replace with actual default values or user data
+    @State private var defaultValues: String? = UserDefaults.standard.string(forKey: "userEmail") // Example
+
     var body: some View {
         NavigationView {
-            InscrireViewModel()
-                .navigationBarHidden(true)
+            if let values = defaultValues, !values.isEmpty {
+                HomeView() // Navigate to HomeView if defaultValues are not empty
+                
+            } else {
+                InscrireViewModel() // Navigate to InscrireViewModel if defaultValues are empty
+            }
         }
-    }
-    
-    
-    struct ContentView_Previews: PreviewProvider {
-        static var previews: some View {
-            ContentView()
-        }
+        .navigationBarHidden(true)
     }
 }
 

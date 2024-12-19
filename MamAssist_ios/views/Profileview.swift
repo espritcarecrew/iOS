@@ -97,7 +97,7 @@ struct ProfileView: View {
                 loadImage()
             }
             .navigationDestination(isPresented: $isLoggedOut) {
-                LoginViewWithAssetImage()
+                InscrireViewModel()
                     .navigationBarHidden(true)
                     .navigationBarBackButtonHidden(true)
             }

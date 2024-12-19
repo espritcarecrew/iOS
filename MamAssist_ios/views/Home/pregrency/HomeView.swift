@@ -4,7 +4,6 @@ struct HomeView: View {
     @State private var selectedTab: Int = 0 // Current selected tab for custom navigation
     
     var body: some View {
-        NavigationView {
             ZStack {
                 // Background Image
                 Image("resetpass")
@@ -56,17 +55,20 @@ struct HomeView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.purple)
                     .multilineTextAlignment(.center)
-
+                    .padding(.leading, 50)
                 // Left Spacer
                 Spacer()
-
+                
                 // Right Icon
-                NavigationLink(destination: ProfileView()) { // Replace `ProfileView` with your actual profile view
+                NavigationLink(destination: ProfileView()) {
                     Image(systemName: "person.crop.circle")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.purple)
                         .padding(.trailing, 16)
-                }
+                }.simultaneousGesture(TapGesture().onEnded {
+                    print("Profile button tapped")
+                })
+                
             }
         }
     }
@@ -129,13 +131,67 @@ struct HomeView: View {
                         .padding(.horizontal)
                     }
                     
+                    VStack() {
+                        
+                        // Title
+                        Text("Hey, who are you?")
+                            .font(.system(size: 30, weight: .bold)) // Taille personnalisée
+                            .foregroundColor(.purple)
+                            .padding(.bottom, 40)
+                        
+                        
+                        // "I'm Pregnant" Button
+                        NavigationLink(destination: PregnancyTrackingView()) {
+                            HStack {
+                                Image(systemName: "figure.stand.dress")
+                                    .foregroundColor(.purple)
+                                Text("I'm pregnant")
+                                    .foregroundColor(.purple)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.purple)
+                            }
+                            .frame(minWidth: 0, maxWidth: .infinity)
+                            .padding()
+                            .background(Color.clear)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.purple, lineWidth: 1)
+                            )
+                        } .background(Color.pink.opacity(0.1).edgesIgnoringSafeArea(.all))
+                    
+                        
+                        // "I Have Children" Button
+                        NavigationLink(destination: MotherHealthView()) {
+                            HStack {
+                                Image(systemName: "figure.and.child.holdinghands")
+                                    .foregroundColor(.purple)
+                                Text("I have children")
+                                    .foregroundColor(.purple)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.purple)
+                                Spacer()
+
+                            }
+                            .frame(minWidth: 0, maxWidth: .infinity)
+                            .padding()
+                            .background(Color.clear)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.purple, lineWidth: 1)
+                            )
+                        } .background(Color.pink.opacity(0.1).edgesIgnoringSafeArea(.all))
+
+                    }
+                    
                     // **New Button: "What Happens in Months"**
-                    NavigationLink(destination: MonthsView()) {
+                          NavigationLink(destination: MonthsView()) {
                         ActionButton(title: "What Happens in Months", iconName: "calendar")
                             .padding(.horizontal)
                     }
-                    VStack(spacing: 20) {
-                        // Section supérieure avec image et texte
+                   VStack(spacing: 20) {
+                                 // Section supérieure avec image et texte
                         HStack {
                             Image("profile") // Remplacez par le nom de votre image dans Assets
                                 .resizable()
@@ -223,59 +279,7 @@ struct HomeView: View {
                     Spacer()
 
                 }
-                    VStack() {
-                        
-                        // Title
-                        Text("Hey, who are you?")
-                            .font(.system(size: 30, weight: .bold)) // Taille personnalisée
-                            .foregroundColor(.purple)
-                            .padding(.bottom, 40)
-                        
-                        
-                        // "I'm Pregnant" Button
-                        NavigationLink(destination: PregnancyTrackingView()) {
-                            HStack {
-                                Image(systemName: "figure.stand.dress")
-                                    .foregroundColor(.purple)
-                                Text("I'm pregnant")
-                                    .foregroundColor(.purple)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.purple)
-                            }
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .padding()
-                            .background(Color.clear)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.purple, lineWidth: 1)
-                            )
-                        } .background(Color.pink.opacity(0.1).edgesIgnoringSafeArea(.all))
-                    
-                        
-                        // "I Have Children" Button
-                        NavigationLink(destination: MotherHealthView()) {
-                            HStack {
-                                Image(systemName: "figure.and.child.holdinghands")
-                                    .foregroundColor(.purple)
-                                Text("I have children")
-                                    .foregroundColor(.purple)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.purple)
-                                Spacer()
-
-                            }
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .padding()
-                            .background(Color.clear)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.purple, lineWidth: 1)
-                            )
-                        } .background(Color.pink.opacity(0.1).edgesIgnoringSafeArea(.all))
-
-                    }
+                   
                         
                         VStack(alignment: .leading, spacing: 20) {
                             HStack {
@@ -366,8 +370,7 @@ struct HomeView: View {
             }
         }
     
-}
-    
+
     struct CardView: View {
         let color: Color
         let imageName: String

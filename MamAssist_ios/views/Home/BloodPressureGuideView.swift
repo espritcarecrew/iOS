@@ -2,7 +2,6 @@ import SwiftUI
 
 struct BloodPressureGuideView: View {
     var body: some View {
-        NavigationView {
             VStack {
                 // Top bar with close button
                 HStack {
@@ -67,7 +66,7 @@ struct BloodPressureGuideView: View {
             .background(Color.white.edgesIgnoringSafeArea(.all))
         }
     }
-}
+
 
 // Subview for each instruction step
 struct GuideStepView: View {

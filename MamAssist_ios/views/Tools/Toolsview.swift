@@ -2,8 +2,8 @@ import SwiftUI
 
 struct ToolsView: View {
     let tools = [
-        ("Checklist", "list.bullet"),
-        ("Q&A", "questionmark.bubble"),
+        ("Calendar", "calendar"),
+        ("prediction", "questionmark.bubble"),
         ("Daily Mood", "face.smiling"),
         ("Pre-parenting Conversations", "gamecontroller"),
         ("Guides", "book"),
@@ -18,7 +18,7 @@ struct ToolsView: View {
     @State private var currentImageIndex = 0 // Tracks the current image index
 
     var body: some View {
-        NavigationStack { // Ensure NavigationStack is present
+        NavigationStack {
             VStack(spacing: 20) {
                 ScrollView {
                     VStack(spacing: 20) {
@@ -26,6 +26,7 @@ struct ToolsView: View {
                         Text("Tools")
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                            .foregroundColor(.purple) // Updated text color
                             .padding(.top, 20)
                         
                         // Centered Image Carousel with Navigation
@@ -42,9 +43,8 @@ struct ToolsView: View {
                                                 .cornerRadius(15)
                                                 .clipped()
                                         }
-                                        .tag(index) // Tag the first image
+                                        .tag(index)
                                     } else if index == 1 {
-                                        // First image with NavigationLink
                                         NavigationLink(destination: ToDoView()) {
                                             Image(images[index])
                                                 .resizable()
@@ -77,23 +77,27 @@ struct ToolsView: View {
                             Text("Tools")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .foregroundColor(.purple) // Updated text color
                                 .padding(.horizontal)
                             
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 20), count: 3), spacing: 20) {
                                 ForEach(tools, id: \.0) { tool in
-                                    VStack {
-                                        Image(systemName: tool.1)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 40, height: 40)
-                                            .foregroundColor(.purple)
-                                        
-                                        Text(tool.0)
-                                            .font(.caption)
-                                            .multilineTextAlignment(.center)
-                                            .padding(.top, 5)
+                                    NavigationLink(destination: destinationView(for: tool.0)) {
+                                        VStack {
+                                            Image(systemName: tool.1)
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(width: 40, height: 40)
+                                                .foregroundColor(.purple) // Updated icon color
+                                            
+                                            Text(tool.0)
+                                                .font(.caption)
+                                                .foregroundColor(.purple) // Updated text color
+                                                .multilineTextAlignment(.center)
+                                                .padding(.top, 5)
+                                        }
+                                        .frame(maxWidth: .infinity)
                                     }
-                                    .frame(maxWidth: .infinity)
                                 }
                             }
                             .padding(.horizontal)
@@ -105,8 +109,22 @@ struct ToolsView: View {
             .background(Color("PeachBackground").edgesIgnoringSafeArea(.all))
         }
     }
+    
+    // Returns the destination view for each tool
+    @ViewBuilder
+    private func destinationView(for tool: String) -> some View {
+        switch tool {
+        case "Calendar":
+            MoodCalendarView()
+        case "Daily Mood":
+            MoodCheckView()
+        case "Q&A":
+            PredictionView()
+        default:
+            Text("\(tool) Placeholder") // Placeholder for other tools
+        }
+    }
 }
-
 
 struct ToolsView_Previews: PreviewProvider {
     static var previews: some View {
